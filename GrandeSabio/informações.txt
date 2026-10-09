@@ -1,0 +1,7 @@
+python grande_sabio.py (roda o grande sabio)
+
+temos o pip install colorama (cor para o grande sabio)
+temos o pip install google-genai (para baixar o assistente)
+cd /d E:\GrandeSabio (O "E" vai variar conforme o pc)
+esses comando roda no cmd da pasta GrandeSabio
+

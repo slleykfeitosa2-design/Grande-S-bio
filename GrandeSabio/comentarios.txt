@@ -1,0 +1,6 @@
+quando comecei a fazer o grande sábio, ele não tinha ia para responder, então no primeiro dia (anotações) ele apenas seguia instruções já definidas.
+
+no dia seguinte, acrescentei a ia ao projeto, no começo ela apenas respondia coisas simples, pois estava aprendendo a como responder aos comandos.
+
+conforme a criação da memoria do grande sábio (anotações) ele esquecia de retirar os comandos de registro e salvava junto com as anotações, além disso ele ainda não consegue puxar para responder algo, somente dizer o registro, mas não é absorvido para entrada na conversa. Outro ponto, ele mistura os comandos, Memória; hora; data; anotações; comentários; etc, conforme esse problema existe, precisei colocar em sequencia de prioridade entre eles, para aceitar o primeiro que aparece e ignorar todos os outros como comando, e deixar como texto sem comando algum.
+

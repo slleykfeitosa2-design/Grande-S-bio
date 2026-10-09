@@ -1,0 +1,90 @@
+from datetime import datetime
+import json
+import os
+import sys
+
+# Altere para "memoriaCiel.json" ou o arquivo que desejar gerenciar
+ARQUIVO_MEMORIA = "memoriaGS.json"
+
+
+def carregar_memoria():
+    """Carrega os dados do JSON com segurança.
+
+    Se o arquivo estiver corrompido, isola-o em um backup para evitar perda de
+    dados.
+    """
+    try:
+        with open(ARQUIVO_MEMORIA, "r", encoding="utf-8") as arquivo:
+            return json.load(arquivo)
+    except FileNotFoundError:
+        print(
+            f"⚠️ Aviso: O arquivo '{ARQUIVO_MEMORIA}' não foi encontrado. Iniciando com memória vazia."
+        )
+        return {}
+    except json.JSONDecodeError:
+        print(
+            f"❌ Erro: A memória em '{ARQUIVO_MEMORIA}' está com defeito (JSON corrompido) e deverá ser corrigida.",
+            file=sys.stderr,
+        )
+
+        # Gera um arquivo de backup com data e hora para salvar o que restou do original
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        arquivo_backup = f"{ARQUIVO_MEMORIA}.corrompido_{timestamp}.bak"
+
+        try:
+            os.rename(ARQUIVO_MEMORIA, arquivo_backup)
+            print(
+                f"📦 Arquivo com defeito isolado com sucesso como: '{arquivo_backup}'"
+            )
+        except Exception as e:
+            print(
+                f"⚠️ Não foi possível isolar o arquivo com defeito: {e}",
+                file=sys.stderr,
+            )
+
+        return {}
+
+
+def salvar_memoria(dados):
+    """Salva os dados de forma atômica utilizando um arquivo temporário.
+
+    Isso impede que o arquivo original seja corrompido se o programa fechar no
+    meio do processo.
+    """
+    arquivo_temporario = f"{ARQUIVO_MEMORIA}.tmp"
+
+    try:
+        # 1. Escreve primeiro no arquivo temporário (.tmp)
+        with open(arquivo_temporario, "w", encoding="utf-8") as arquivo:
+            json.dump(dados, arquivo, indent=4, ensure_ascii=False)
+
+        # 2. Substitui o arquivo real pelo temporário instantaneamente
+        os.replace(arquivo_temporario, ARQUIVO_MEMORIA)
+        print(
+            f"💾 Memória em '{ARQUIVO_MEMORIA}' salva com sucesso e em segurança!"
+        )
+
+    except Exception as e:
+        print(f"❌ Erro crítico ao salvar a memória: {e}", file=sys.stderr)
+        # Remove o arquivo temporário caso ele tenha sido criado mas a substituição falhou
+        if os.path.exists(arquivo_temporario):
+            os.remove(arquivo_temporario)
+
+
+# ==============================================================================
+# EXEMPLO DE USO (Você pode apagar ou comentar esta parte no seu script real)
+# ==============================================================================
+if __name__ == "__main__":
+    print("--- Testando o Sistema de Memória Defensivo ---")
+
+    # Tenta carregar os dados existentes
+    memoria_atual = carregar_memoria()
+
+    # Modifica ou adiciona alguma informação na memória para testar a gravação
+    memoria_atual["ultima_execucao"] = datetime.now().strftime(
+        "%d/%m/%Y %H:%M:%S"
+    )
+    memoria_atual["status"] = "OK"
+
+    # Salva as alterações de forma segura
+    salvar_memoria(memoria_atual)
